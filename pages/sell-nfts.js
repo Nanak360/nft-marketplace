@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import Web3Modal from "web3modal";
+import Image from "next/image";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
@@ -14,6 +15,8 @@ import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
+  const [loader, setLoader] = useState(false);
+  const [createNFTLoader, setCreateNFTLLoader] = useState(false);
   const [formInput, updateFormInput] = useState({
     price: "",
     name: "",
@@ -22,18 +25,22 @@ export default function CreateItem() {
   const router = useRouter();
 
   async function onChange(e) {
+    setLoader(true);
     const file = e.target.files[0];
+
     try {
       const added = await client.add(file, {
         progress: (prog) => console.log(`received: ${prog}`),
       });
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      setLoader(false);
       setFileUrl(url);
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
   }
   async function createMarket() {
+    setCreateNFTLLoader(true);
     const { name, description, price } = formInput;
     if (!name || !description || !price || !fileUrl) return;
     /* first, upload to IPFS */
@@ -48,6 +55,7 @@ export default function CreateItem() {
       /* after file is uploaded to IPFS, pass the URL to save it on Polygon */
       createSale(url);
     } catch (error) {
+      setCreateNFTLLoader(false);
       console.log("Error uploading file: ", error);
     }
   }
@@ -77,21 +85,36 @@ export default function CreateItem() {
     });
     await transaction.wait();
     router.push("/");
+    setCreateNFTLLoader(false);
+  }
+  function thisFileUpload() {
+    document.getElementById("file").click();
   }
 
   return (
     <div className="px-20 py-10 flex justify-evenly">
-      <div
-        id="div"
-        name="button"
-        onClick={() => {
-          thisFileUpload();
-        }}
-        className="w-1/3 flex border-4 border-dashed rounded-3xl hover:bg-gray-100 transition ease-in-out cursor-pointer"
-      >
-        {fileUrl ? (
-          <Image className="rounded-xl mt-4" width="350" src={fileUrl} />
-        ) : (
+      {fileUrl ? (
+        <div>
+          <Image
+            className="rounded-xl mt-4"
+            width={500}
+            height={500}
+            src={fileUrl}
+          />
+        </div>
+      ) : loader ? (
+        <div class=" flex justify-center items-center">
+          <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-cyan-900"></div>
+        </div>
+      ) : (
+        <div
+          id="div"
+          name="button"
+          onClick={() => {
+            thisFileUpload();
+          }}
+          className="w-1/3 flex border-4 border-dashed rounded-3xl hover:bg-gray-100 transition ease-in-out cursor-pointer"
+        >
           <div className="flex flex-col basis-full justify-center items-center text-center">
             <span className="text-3xl font-semibold text-gray-400">
               Upload File
@@ -105,8 +128,8 @@ export default function CreateItem() {
               MB
             </span>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <input type="file" id="file" className="hidden" onChange={onChange} />
 
@@ -135,15 +158,19 @@ export default function CreateItem() {
             updateFormInput({ ...formInput, price: e.target.value })
           }
         />
-        <input type="file" name="Asset" className="my-4" onChange={onChange} />
-        {fileUrl && (
-          <img className="rounded-xl mt-4" width="350" src={fileUrl} />
-        )}
+
         <button
           onClick={createMarket}
           className="font-bold mt-4 bg-gradient-to-l from-cyan-500 to-indigo-700 shadow-lg text-white rounded-xl p-4"
         >
-          Create Digital Asset
+          {createNFTLoader ? (
+            <div class="flex justify-center items-center">
+              <span> Creating your NFT</span>
+              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white ml-3"></div>
+            </div>
+          ) : (
+            "Create NFT"
+          )}
         </button>
       </div>
     </div>
