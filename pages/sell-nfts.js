@@ -80,34 +80,68 @@ export default function CreateItem() {
   }
 
   return (
-    <div className="flex justify-center">
+    <div className="px-20 py-10 flex justify-evenly">
+      <div
+        id="div"
+        name="button"
+        onClick={() => {
+          thisFileUpload();
+        }}
+        className="w-1/3 flex border-4 border-dashed rounded-3xl hover:bg-gray-100 transition ease-in-out cursor-pointer"
+      >
+        {fileUrl ? (
+          <Image className="rounded-xl mt-4" width="350" src={fileUrl} />
+        ) : (
+          <div className="flex flex-col basis-full justify-center items-center text-center">
+            <span className="text-3xl font-semibold text-gray-400">
+              Upload File
+            </span>
+            <br />
+            <span className="text-md text-gray-400">
+              Currently we support only Images and GIFs
+            </span>
+            <span className="text-xs w-9/12 font-medium text-gray-400">
+              File types supported: JPG, PNG, GIF and SVG. <br /> Max size: 100
+              MB
+            </span>
+          </div>
+        )}
+      </div>
+
+      <input type="file" id="file" className="hidden" onChange={onChange} />
+
       <div className="w-1/2 flex flex-col pb-12">
         <input
-          placeholder="Asset Name"
-          className="mt-8 border rounded p-4"
+          placeholder="NFT Name"
+          className="mt-8 border rounded-xl p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, name: e.target.value })
           }
         />
         <textarea
-          placeholder="Asset Description"
-          className="mt-2 border rounded p-4"
+          placeholder="NFT's Description"
+          className="mt-2 border rounded-xl p-4"
           onChange={(e) =>
-            updateFormInput({ ...formInput, description: e.target.value })
+            updateFormInput({
+              ...formInput,
+              description: e.target.value,
+            })
           }
         />
         <input
-          placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
+          placeholder="Price in Matic"
+          className="mt-2 border rounded-xl p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, price: e.target.value })
           }
         />
         <input type="file" name="Asset" className="my-4" onChange={onChange} />
-        {fileUrl && <img className="rounded mt-4" width="350" src={fileUrl} />}
+        {fileUrl && (
+          <img className="rounded-xl mt-4" width="350" src={fileUrl} />
+        )}
         <button
           onClick={createMarket}
-          className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
+          className="font-bold mt-4 bg-gradient-to-l from-cyan-500 to-indigo-700 shadow-lg text-white rounded-xl p-4"
         >
           Create Digital Asset
         </button>
