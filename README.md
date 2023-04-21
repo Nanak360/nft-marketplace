@@ -1,15 +1,31 @@
-# Basic Sample Hardhat Project
+# Run the following to start the app in local environment
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
 
-Try running some of the following tasks:
+1. Install the dependencies:
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
+```sh
+# install using NPM or Yarn
+npm install
+
+# or
+
+yarn install
+```
+
+2. Start the local Hardhat node
+
+```sh
 npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
+```
+
+3. With the network running, deploy the contracts to the local network in a separate terminal window
+
+```sh
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+4. Start the app
+
+```
+npm run dev
 ```
